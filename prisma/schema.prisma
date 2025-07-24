@@ -1,0 +1,307 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  BORROWED
+  RETURNED
+  LOST
+  DAMAGED
+  AVAILABLE
+}
+
+enum RepoType {
+  EJURNAL
+  JURNAL
+  EBOOK
+  BUKU
+  SKRIPSI
+}
+
+enum JenisKelamin {
+  L
+  P
+}
+
+model User {
+  id                      Int                       @id @default(autoincrement())
+  username                String                    @db.VarChar(255)
+  fullname                String                    @db.VarChar(255)
+  email                   String?                   @db.VarChar(255)
+  password                String                    @db.VarChar(255)
+  id_role                 Int                       @db.Int()
+  foto                    String?                   @db.VarChar(255)
+  createdAt               DateTime                  @default(now()) @db.Timestamp(0)
+  updatedAt               DateTime                  @updatedAt @db.Timestamp(0)
+  OauthAuthorizationCodes OauthAuthorizationCodes[]
+  transaksi               Transaksi[]
+  mahasiswa               Mahasiswa?
+  dosen                   Dosen?
+  umum                    Umum?
+
+  @@map("users")
+}
+
+model OauthAuthorizationCodes {
+  id                  Int                 @id @default(autoincrement())
+  authorization_codes String              @db.VarChar(255)
+  user_agent          String?             @db.VarChar(255)
+  ip_address          String?             @db.VarChar(255)
+  client              String              @db.VarChar(255)
+  signature           String              @db.VarChar(255)
+  id_user             Int                 @db.Int
+  user                User                @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  createdAt           DateTime            @default(now()) @db.Timestamp(0)
+  updatedAt           DateTime            @updatedAt @db.Timestamp(0)
+  OauthAccessTokens   OauthAccessTokens?
+  OauthRefreshTokens  OauthRefreshTokens?
+
+  @@map("oauth_authorization_codes")
+}
+
+model OauthAccessTokens {
+  id                      Int                     @id @default(autoincrement())
+  access_token            String                  @db.LongText
+  access_token_expires_at BigInt                  @db.BigInt
+  id_auth                 Int                     @unique
+  authorization           OauthAuthorizationCodes @relation(fields: [id_auth], references: [id], onDelete: Cascade)
+  createdAt               DateTime                @default(now()) @db.Timestamp(0)
+  updatedAt               DateTime                @updatedAt @db.Timestamp(0)
+
+  @@map("oauth_access_tokens")
+}
+
+model OauthRefreshTokens {
+  id                       Int                     @id @default(autoincrement())
+  refresh_token            String                  @db.LongText
+  refresh_token_expires_at BigInt                  @db.BigInt
+  id_auth                  Int                     @unique
+  authorization            OauthAuthorizationCodes @relation(fields: [id_auth], references: [id], onDelete: Cascade)
+  createdAt                DateTime                @default(now()) @db.Timestamp(0)
+  updatedAt                DateTime                @updatedAt @db.Timestamp(0)
+
+  @@map("oauth_refresh_tokens")
+}
+
+model Mahasiswa {
+  id            Int          @id @default(autoincrement())
+  nama          String       @db.VarChar(255)
+  nim           String       @db.VarChar(255)
+  kontak        String?      @db.VarChar(255)
+  alamat        String?      @db.VarChar(255)
+  fakultas      String?      @db.VarChar(255)
+  id_prodi      Int?         @db.Int
+  prodi         RefProdi?    @relation(fields: [id_prodi], references: [id], onDelete: SetNull)
+  angkatan      Int          @db.Int
+  jenis_kelamin JenisKelamin @default(L)
+  id_user       Int?         @unique
+  user          User?        @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime     @updatedAt @db.Timestamp(0)
+
+  @@map("mahasiswa")
+}
+
+model Dosen {
+  id            Int          @id @default(autoincrement())
+  nama          String       @db.VarChar(255)
+  no_identitas  String?      @db.VarChar(255)
+  kontak        String?      @db.VarChar(255)
+  kampus        String?      @db.VarChar(255)
+  jabatan       String?      @db.VarChar(255)
+  alamat        String?      @db.VarChar(255)
+  jenis_kelamin JenisKelamin @default(L)
+  id_user       Int?         @unique
+  user          User?        @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime     @updatedAt @db.Timestamp(0)
+
+  @@map("dosen")
+}
+
+model Umum {
+  id            Int          @id @default(autoincrement())
+  nama          String       @db.VarChar(255)
+  nik           String?      @db.VarChar(255)
+  instansi      String       @db.VarChar(255)
+  kontak        String       @db.VarChar(255)
+  alamat        String?      @db.VarChar(255)
+  jenis_kelamin JenisKelamin @default(L)
+  id_user       Int?         @unique
+  user          User?        @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime     @updatedAt @db.Timestamp(0)
+
+  @@map("umum")
+}
+
+model Repository {
+  id          Int            @id @default(autoincrement())
+  judul       String         @db.LongText
+  pengarang   String?        @db.LongText
+  nama_sampul String?        @db.LongText
+  nama_file   String?        @db.LongText
+  type        RepoType       @default(BUKU)
+  createdAt   DateTime       @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime       @updatedAt @db.Timestamp(0)
+  jurnal      ArtikelJurnal?
+  buku        Buku?
+  ebook       Ebook?
+  ejurnal     Ejurnal?
+  skripsi     Skripsi?
+  transaksi   Transaksi[]
+
+  @@map("repository")
+}
+
+model ArtikelJurnal {
+  id            Int        @id @default(autoincrement())
+  abstrak       String?    @db.LongText
+  penerbit      String?    @db.LongText
+  jurnal        String?    @db.LongText
+  tahun_terbit  Int        @db.Int
+  isbn          String?    @db.VarChar(255)
+  id_lokasi     Int?       @db.Int
+  lokasi        RefLokasi? @relation(fields: [id_lokasi], references: [id], onDelete: SetNull)
+  id_repository Int        @unique
+  repository    Repository @relation(fields: [id_repository], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(0)
+
+  @@map("artikel_jurnal")
+}
+
+model Buku {
+  id             Int        @id @default(autoincrement())
+  tanggal        DateTime?  @db.DateTime()
+  no_regist      String?    @db.VarChar(255)
+  sinopsis       String?    @db.LongText
+  cetakan        String?    @db.VarChar(255)
+  penerbit       String     @db.LongText
+  tempat_terbit  String?    @db.VarChar(255)
+  tahun_terbit   Int        @db.Int
+  asal_buku      String?    @db.VarChar(255)
+  isbn           String?    @db.VarChar(255)
+  no_klasifikasi String?    @db.VarChar(255)
+  harga          Int        @default(0) @db.Int()
+  jumlah_buku    Int        @default(0) @db.Int()
+  keterangan     String?    @db.VarChar(255)
+  id_lokasi      Int?       @db.Int
+  lokasi         RefLokasi? @relation(fields: [id_lokasi], references: [id], onDelete: SetNull)
+  id_repository  Int        @unique
+  repository     Repository @relation(fields: [id_repository], references: [id], onDelete: Cascade)
+  createdAt      DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt      DateTime   @updatedAt @db.Timestamp(0)
+
+  @@map("buku")
+}
+
+model Ebook {
+  id            Int        @id @default(autoincrement())
+  sinopsis      String?    @db.LongText
+  cetakan       String?    @db.VarChar(255)
+  penerbit      String     @db.LongText
+  tempat_terbit String?    @db.VarChar(255)
+  tahun_terbit  Int        @db.Int
+  isbn          String?    @db.VarChar(255)
+  id_repository Int        @unique
+  repository    Repository @relation(fields: [id_repository], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(0)
+
+  @@map("ebook")
+}
+
+model Ejurnal {
+  id            Int        @id @default(autoincrement())
+  abstrak       String?    @db.LongText
+  penerbit      String?    @db.LongText
+  jurnal        String?    @db.VarChar(255)
+  tahun_terbit  Int        @db.Int
+  isbn          String?    @db.VarChar(255)
+  id_repository Int        @unique
+  repository    Repository @relation(fields: [id_repository], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(0)
+
+  @@map("ejurnal")
+}
+
+model Skripsi {
+  id            Int        @id @default(autoincrement())
+  abstrak       String?    @db.LongText
+  fakultas      String?    @db.VarChar(255)
+  id_prodi      Int?       @db.Int
+  prodi         RefProdi?  @relation(fields: [id_prodi], references: [id], onDelete: SetNull)
+  tahun_terbit  Int        @db.Int
+  id_lokasi     Int?       @db.Int
+  lokasi        RefLokasi? @relation(fields: [id_lokasi], references: [id], onDelete: SetNull)
+  id_repository Int        @unique
+  repository    Repository @relation(fields: [id_repository], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(0)
+
+  @@map("skripsi")
+}
+
+model Transaksi {
+  id            Int        @id @default(autoincrement())
+  id_user       Int        @db.Int
+  user          User       @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  id_repository Int        @db.Int
+  repository    Repository @relation(fields: [id_repository], references: [id], onDelete: Cascade)
+  status        Status     @default(RETURNED)
+  borrowedAt    DateTime?  @db.DateTime()
+  returnedAt    DateTime?  @db.DateTime()
+  createdAt     DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime   @updatedAt @db.Timestamp(0)
+
+  @@map("transaksi")
+}
+
+model visitor {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @db.Timestamp(0)
+  user_agent String?  @db.VarChar(255)
+  ip_address String?  @db.VarChar(255)
+  url        String?  @db.VarChar(255)
+  createdAt  DateTime @default(now()) @db.Timestamp(0)
+  updatedAt  DateTime @updatedAt @db.Timestamp(0)
+
+  @@map("visitor")
+}
+
+model RefLokasi {
+  id            Int             @id @default(autoincrement())
+  nama          String          @db.VarChar(255)
+  createdAt     DateTime        @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime        @updatedAt @db.Timestamp(0)
+  ArtikelJurnal ArtikelJurnal[]
+  Buku          Buku[]
+  Skripsi       Skripsi[]
+
+  @@map("ref_lokasi")
+}
+
+model RefProdi {
+  id         Int         @id @default(autoincrement())
+  nama       String      @db.VarChar(255)
+  id_pddikti String?     @db.VarChar(255)
+  createdAt  DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt  DateTime    @updatedAt @db.Timestamp(0)
+  Mahasiswa  Mahasiswa[]
+  Skripsi    Skripsi[]
+
+  @@map("ref_prodi")
+}
