@@ -6,15 +6,11 @@ import {
 } from '@nestjs/common';
 import { CommonModule } from './common/common.module';
 import { OauthModule } from './oauth/oauth.module';
-import { StatistikModule } from './statistik/statistik.module';
-import { AnggotaModule } from './anggota/anggota.module';
-import { RepositoryModule } from './repository/repository.module';
 import { PublicModule } from './public/public.module';
 import { JWTMiddleware } from './common/jwt.middleware';
 import { CacheControlMiddleware } from './common/cache-control.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import * as fs from 'fs';
-import { TransaksiModule } from './transaksi/transaksi.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -31,11 +27,7 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     CommonModule,
     OauthModule,
-    StatistikModule,
-    AnggotaModule,
-    RepositoryModule,
     PublicModule,
-    TransaksiModule,
   ],
   controllers: [],
   providers: [
