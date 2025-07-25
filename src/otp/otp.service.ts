@@ -11,7 +11,7 @@ export class OTPService {
   async sendOTP(phone: string): Promise<string> {
     const otp = generateOTP();
     const jid = phone.replace(/\D/g, '') + '@s.whatsapp.net';
-    const message = `Kode OTP Anda: *${otp}*\nJangan berikan kode ini kepada siapa pun.`;
+    const message = `🔐 OTP VERIFICATION\n\nKode OTP Anda: *${otp}*\n\n⁠Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda`;
 
     await this.wa.getSocket().sendMessage(jid, { text: message });
 
