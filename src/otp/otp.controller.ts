@@ -1,15 +1,23 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { OTPService } from './otp.service';
 
-@Controller('otp')
+@Controller('/api/otp')
 export class OTPController {
   constructor(private readonly otpService: OTPService) {}
 
-  @Post('send')
-  async send(@Body('phone') phone: string) {
-    if (!phone) return { success: false, message: 'Phone number required' };
+  @Post('/create')
+  async send(@Body('phone') phone: string, @Body('identity') identity: string) {
+    const result = await this.otpService.create(phone, identity);
+    return result;
+  }
 
-    await this.otpService.sendOTP(phone);
-    return { success: true, message: 'OTP sent via WhatsApp' };
+  @Post('/validate')
+  async validate(
+    @Body('phone') phone: string,
+    @Body('otp') otp: string,
+    @Body('identity') identity: string,
+  ) {
+    const result = await this.otpService.validate(phone, otp, identity);
+    return result;
   }
 }

@@ -93,3 +93,14 @@ model PerkaraBanding {
 
   @@map("perkara_banding")
 }
+
+model SessionOTP {
+  id        Int      @id @default(autoincrement())
+  kontak_wa String   @db.VarChar(255)
+  identity  String   @db.VarChar(255)
+  session   String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @db.Timestamp(0)
+
+  @@map("session_otp")
+}
