@@ -27,7 +27,7 @@ export class OTPValidation {
           required_error: 'OTP is required',
           invalid_type_error: 'OTP must be a string',
         })
-        .regex(/^\d[0-9]{6}$/, {
+        .regex(/^\d{6}$/, {
           message: 'OTP must be exactly 6 digits number',
         }),
     }),

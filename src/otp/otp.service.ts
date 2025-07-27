@@ -1,4 +1,4 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { BaileysProvider } from '../baileys/baileys.provider';
 import { generateOTP, validateOTP } from 'src/utils/otp.util';
 import { PrismaService } from 'src/common/prisma.service';
@@ -7,8 +7,6 @@ import { OTPValidation } from './otp.validation';
 
 @Injectable()
 export class OTPService {
-  private logger = new Logger(OTPService.name);
-
   constructor(
     private readonly wa: BaileysProvider,
     private prismaService: PrismaService,
@@ -49,8 +47,7 @@ export class OTPService {
 
     await this.wa.getSocket().sendMessage(jid, { text: message });
 
-    this.logger.log(`✅ OTP sent to ${data.phone}`);
-    return otp;
+    return `✅ OTP sent to ${data.phone}`;
   }
 
   async validate(
@@ -64,11 +61,28 @@ export class OTPService {
       identity: identity,
     });
 
-    validateOTP({
+    const phoneNumberHasSession = await this.prismaService.sessionOTP.findFirst(
+      {
+        where: {
+          kontak_wa: data.phone,
+          identity: data.identity,
+        },
+      },
+    );
+
+    if (!phoneNumberHasSession)
+      throw new HttpException(
+        'This phone number otp session not found on our system records',
+        400,
+      );
+
+    const isValidOTP = validateOTP({
       otp: data.otp,
-      token: data.identity,
+      token: phoneNumberHasSession.session,
     });
 
-    return 'Success';
+    if (!isValidOTP) throw new HttpException('OTP number is invalid', 400);
+
+    return `✅ OTP success to validate ${data.phone}`;
   }
 }

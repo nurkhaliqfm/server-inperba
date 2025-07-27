@@ -2,7 +2,6 @@ import * as speakeasy from 'speakeasy';
 
 export function generateOTP(): { otp: string; token: string } {
   const secret = speakeasy.generateSecret({ length: 20 });
-  console.log(secret);
   const otp = speakeasy.totp({
     secret: secret.base32,
     encoding: 'base32',
