@@ -83,6 +83,13 @@ export class OTPService {
 
     if (!isValidOTP) throw new HttpException('OTP number is invalid', 400);
 
+    await this.prismaService.sessionOTP.update({
+      where: { id: phoneNumberHasSession.id },
+      data: {
+        isValidate: true,
+      },
+    });
+
     return `✅ OTP success to validate ${data.phone}`;
   }
 }

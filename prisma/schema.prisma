@@ -95,12 +95,13 @@ model PerkaraBanding {
 }
 
 model SessionOTP {
-  id        Int      @id @default(autoincrement())
-  kontak_wa String   @db.VarChar(255)
-  identity  String   @db.LongText
-  session   String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
+  id         Int      @id @default(autoincrement())
+  kontak_wa  String   @db.VarChar(255)
+  identity   String   @db.LongText
+  session    String   @db.VarChar(255)
+  isValidate Boolean  @default(false)
+  createdAt  DateTime @default(now()) @db.Timestamp(0)
+  updatedAt  DateTime @updatedAt @db.Timestamp(0)
 
   @@map("session_otp")
 }
