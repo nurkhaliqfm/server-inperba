@@ -14,7 +14,7 @@ async function bootstrap() {
   app.enableCors({
     origin: process.env.ALLOWED_HOST
       ? JSON.parse(process.env.ALLOWED_HOST)
-      : ['http://localhost:5173'],
+      : ['http://localhost:5173', 'https://n5mjb8cn-5173.asse.devtunnels.ms'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,

@@ -2,8 +2,29 @@ import { PrismaClient, StatusPerkara } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const kontakList = ['6281241285382', '6281283377702'];
+const kontakList = [
+  '6281241285382',
+  '6281586589155',
+  '6281283377702',
+  '6287777140370',
+];
 
+const firstNames = ['Andi', 'Budi', 'Citra', 'Dewi'];
+const lastNames = [
+  'Wijaya',
+  'Saputra',
+  'Nugroho',
+  'Putri',
+  'Pratama',
+  'Santoso',
+];
+
+function getRandomLongName(): string {
+  const first = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const last1 = lastNames[Math.floor(Math.random() * lastNames.length)];
+  const last2 = lastNames[Math.floor(Math.random() * lastNames.length)];
+  return `${first} ${last1} ${last2}`;
+}
 const randomDate = (start: Date, end: Date): Date => {
   return new Date(
     start.getTime() + Math.random() * (end.getTime() - start.getTime()),
@@ -15,6 +36,9 @@ const generateDummy = (kontak_wa: string, index: number) => {
 
   return {
     kontak_wa,
+    jenis_perkara: 'Lain-Lain',
+    pembading: getRandomLongName(),
+    terbanding: getRandomLongName(),
     nomor_perkara: `${index + 1}/G/2025/PTUN.MKS`,
     tanggal_registrasi: tanggalReg,
     status_penetapan_majelis: true,
@@ -33,8 +57,8 @@ const generateDummy = (kontak_wa: string, index: number) => {
 };
 
 async function main() {
-  for (let i = 0; i < 10; i++) {
-    const kontak = kontakList[i < 5 ? 0 : 1];
+  for (let i = 0; i < kontakList.length; i++) {
+    const kontak = kontakList[i];
     const dummy = generateDummy(kontak, i);
 
     await prisma.perkaraBanding.create({
@@ -45,7 +69,7 @@ async function main() {
 
 main()
   .then(() => {
-    console.log('✅ 10 dummy perkara banding berhasil dibuat');
+    console.log('✅ Data dummy perkara banding berhasil dibuat');
   })
   .catch((e) => {
     console.error('❌ Error:', e);
