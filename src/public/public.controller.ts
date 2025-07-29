@@ -36,4 +36,10 @@ export class PublicController {
     const result = await this.publicService.detail(identity, perkara);
     return result;
   }
+
+  @Get('/perkara/delete')
+  async deleteDosen(@Query('perkara') id_perkara: string) {
+    const result = await this.publicService.delete(Number(id_perkara));
+    return result;
+  }
 }

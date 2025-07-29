@@ -165,4 +165,31 @@ export class PublicService {
 
     return data;
   }
+
+  async delete(id_perkara: number) {
+    try {
+      const perkaraById = await this.prismaService.perkaraBanding.findFirst({
+        where: {
+          id: id_perkara,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (perkaraById) {
+        await this.prismaService.perkaraBanding.delete({
+          where: {
+            id: perkaraById.id,
+          },
+        });
+
+        return 'Success delete perkara information';
+      } else {
+        throw new Error('Failed to delete perkara information');
+      }
+    } catch (error) {
+      throw new HttpException(`${error}`, 400);
+    }
+  }
 }
