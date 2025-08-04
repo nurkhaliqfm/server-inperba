@@ -99,6 +99,7 @@ model PerkaraBanding {
   tanggal_penetapan_sidang    DateTime?     @db.Timestamp(0)
   status_hari_sidang          Boolean       @default(false)
   tanggal_hari_sidang         DateTime?     @db.Timestamp(0)
+  amar_putusan                String?       @db.LongText
   status_proses               StatusPerkara @default(PROSES)
   createdAt                   DateTime      @default(now()) @db.Timestamp(0)
   updatedAt                   DateTime      @updatedAt @db.Timestamp(0)

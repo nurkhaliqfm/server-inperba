@@ -44,6 +44,6 @@ export class CommonModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(JWTMiddleware).forRoutes('/api/oauth/logout');
     consumer.apply(JWTMiddleware).forRoutes('/api/oauth/refresh');
-    consumer.apply(JWTMiddleware).forRoutes('/api/admin/*');
+    // consumer.apply(JWTMiddleware).forRoutes('/api/admin/*');
   }
 }

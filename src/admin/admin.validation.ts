@@ -69,5 +69,9 @@ export class PerkaraValidation {
         invalid_type_error: 'Status proses is not valid',
       },
     ),
+    amar_putusan: z.string({
+      required_error: 'Nomor perkara is required',
+      invalid_type_error: 'Nomor perkara must be a string',
+    }),
   });
 }
