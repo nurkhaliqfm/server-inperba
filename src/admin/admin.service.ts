@@ -174,7 +174,6 @@ export class AdminService {
       });
 
       if (perkaraById) {
-        console.log(data);
         await this.prismaService.perkaraBanding.update({
           where: {
             id: perkaraById.id,
