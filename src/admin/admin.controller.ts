@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, Req } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { PerkaraRequest } from 'src/model/perkara.model';
+import { UpdatePasswordRequest } from 'src/model/user.model';
 
 @Controller('/api/admin')
 export class AdminController {
@@ -46,6 +47,17 @@ export class AdminController {
   ) {
     const { data } = request;
     const result = await this.adminService.update(Number(id_perkara), data);
+    return result;
+  }
+
+  @Patch('/reset-password')
+  async updatePassword(
+    @Req() req: any,
+    @Body() body: { data: UpdatePasswordRequest },
+  ) {
+    const { id_user } = req;
+    const { data } = body;
+    const result = await this.adminService.password(Number(id_user), data);
     return result;
   }
 }

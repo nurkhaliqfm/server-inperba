@@ -3,7 +3,9 @@ import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
 import { PerkaraRequest } from 'src/model/perkara.model';
 import { PaginationRequest } from 'src/model/web.model';
-import { PerkaraValidation } from './admin.validation';
+import { PerkaraValidation, UserValidation } from './admin.validation';
+import { UpdatePasswordRequest } from 'src/model/user.model';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AdminService {
@@ -213,6 +215,48 @@ export class AdminService {
       } else {
         throw new Error('Failed to delete perkara information');
       }
+    } catch (error) {
+      throw new HttpException(`${error}`, 400);
+    }
+  }
+
+  async password(id: number, body: UpdatePasswordRequest) {
+    const data = this.validationService.validate(
+      UserValidation.UPDATE_PASSWORD,
+      { id_user: id, ...body },
+    );
+
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { id: data.id_user },
+      });
+
+      if (!user) {
+        throw new Error('User not found.');
+      }
+
+      const isPasswordMatch = await bcrypt.compare(
+        data.password,
+        user.password,
+      );
+
+      if (!isPasswordMatch) {
+        throw new Error(
+          'Failed to update password because your last password is incorect ',
+        );
+      }
+
+      const hashedPassword = await bcrypt.hash(data.newpassword, 10);
+      await this.prismaService.user.update({
+        where: {
+          id: data.id_user,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      return 'Password update successfully';
     } catch (error) {
       throw new HttpException(`${error}`, 400);
     }

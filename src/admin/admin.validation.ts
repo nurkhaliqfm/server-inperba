@@ -75,3 +75,21 @@ export class PerkaraValidation {
     }),
   });
 }
+
+export class UserValidation {
+  static readonly UPDATE_PASSWORD: ZodType = z
+    .object({
+      id_user: z
+        .number({ invalid_type_error: 'User ID must be a number' })
+        .int('User ID must be an integer')
+        .positive('User ID must be a positive number'),
+      password: z.string().min(8, 'Password must be at least 8 characters'),
+      newpassword: z
+        .string()
+        .min(8, 'New password must be at least 8 characters'),
+    })
+    .refine((data) => data.password !== data.newpassword, {
+      path: ['newpassword'],
+      message: 'New password must be different from current password',
+    });
+}

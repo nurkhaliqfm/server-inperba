@@ -49,7 +49,7 @@ export class AppModule implements NestModule {
       .exclude(
         { path: 'api/oauth/token', method: RequestMethod.POST },
         { path: 'api/public/*', method: RequestMethod.GET },
-      );
-    // .forRoutes({ path: 'api/admin/*', method: RequestMethod.ALL });
+      )
+      .forRoutes({ path: 'api/admin/*', method: RequestMethod.ALL });
   }
 }
