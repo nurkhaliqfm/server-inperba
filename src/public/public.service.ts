@@ -49,4 +49,25 @@ export class PublicService {
 
     return data;
   }
+
+  async statistik() {
+    const perkara = await this.prismaService.perkaraBanding.count();
+
+    const perkaraPutus = await this.prismaService.perkaraBanding.count({
+      where: {
+        status_proses: 'PUTUS',
+      },
+    });
+
+    const sisaPerkara = perkara - perkaraPutus;
+    const persentase =
+      perkara === 0 ? 0 : ((perkaraPutus / perkara) * 100).toFixed(2);
+
+    return {
+      perkara: perkara,
+      sisa: sisaPerkara,
+      putus: perkaraPutus,
+      persentase: `${persentase}%`,
+    };
+  }
 }

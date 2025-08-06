@@ -13,4 +13,10 @@ export class PublicController {
     const result = await this.publicService.detail(identity, perkara);
     return result;
   }
+
+  @Get('/perkara-statistik')
+  async statistikPerkara() {
+    const result = await this.publicService.statistik();
+    return result;
+  }
 }
