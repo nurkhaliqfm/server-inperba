@@ -46,7 +46,9 @@ export class OTPService {
     const message = `🔐 OTP VERIFICATION\n\nKode OTP Anda: *${otp}*\n\n> ⁠Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.`;
     const socket = await this.baileys.getSocket();
 
-    await socket.sendMessage(jid, { text: message });
+    console.log(socket, 'WhatsApp socket for sending message');
+
+    // await socket.sendMessage(jid, { text: message });
 
     return `✅ OTP sent to ${data.phone}`;
   }
