@@ -3,10 +3,10 @@ import { BaileysProvider } from '../baileys/baileys.provider';
 import { generateOTP, validateOTP } from 'src/utils/otp.util';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
-import { OTPValidation } from './otp.validation';
+import { WhatsappValidation } from './whatsapp.validation';
 
 @Injectable()
-export class OTPService {
+export class WhatsappService {
   constructor(
     private readonly baileys: BaileysProvider,
     private prismaService: PrismaService,
@@ -14,7 +14,7 @@ export class OTPService {
   ) {}
 
   async create(phone: string, identity: string): Promise<string> {
-    const data = this.validationService.validate(OTPValidation.REQUEST, {
+    const data = this.validationService.validate(WhatsappValidation.REQUEST, {
       phone: phone,
       identity: identity,
     });
@@ -56,7 +56,7 @@ export class OTPService {
     otp: string,
     identity: string,
   ): Promise<string> {
-    const data = this.validationService.validate(OTPValidation.VAIDATION, {
+    const data = this.validationService.validate(WhatsappValidation.REQUEST, {
       phone: phone,
       otp: otp,
       identity: identity,
