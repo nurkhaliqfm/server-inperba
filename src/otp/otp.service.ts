@@ -44,11 +44,11 @@ export class OTPService {
 
     const jid = data.phone.replace(/\D/g, '') + '@s.whatsapp.net';
     const message = `🔐 OTP VERIFICATION\n\nKode OTP Anda: *${otp}*\n\n> ⁠Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.`;
-    const socket = await this.baileys.getSocket();
+    const socket = this.baileys.getSocket();
 
-    console.log(socket, 'WhatsApp socket for sending message');
+    console.log(socket.user.id, 'WhatsApp socket for sending message');
 
-    // await socket.sendMessage(jid, { text: message });
+    await this.baileys.getSocket().sendMessage(jid, { text: message });
 
     return `✅ OTP sent to ${data.phone}`;
   }

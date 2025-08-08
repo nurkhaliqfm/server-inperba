@@ -33,6 +33,7 @@ model User {
   fullname                String                    @db.VarChar(255)
   email                   String?                   @db.VarChar(255)
   password                String                    @db.VarChar(255)
+  kontak                  String?                   @db.VarChar(255)
   id_role                 Int                       @db.Int()
   foto                    String?                   @db.VarChar(255)
   createdAt               DateTime                  @default(now()) @db.Timestamp(0)

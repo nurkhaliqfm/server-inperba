@@ -18,10 +18,7 @@ export class BaileysProvider implements OnModuleInit {
   private maxReconnectAttempts = 5;
 
   async onModuleInit(): Promise<void> {
-    console.log('BaileysProvider initialized', this.socket);
-    if (this.socket) {
-      await this.start();
-    }
+    await this.start();
   }
 
   private clearSession(): void {
@@ -39,12 +36,6 @@ export class BaileysProvider implements OnModuleInit {
     if (this.isConnecting) {
       this.logger.warn('⚠️ Already attempting to connect, skipping...');
       return;
-    }
-
-    const targetPhone = phone?.replace(/\D/g, '');
-
-    if (!targetPhone) {
-      this.logger.error('❌ No phone number provided for pairing');
     }
 
     try {
@@ -104,7 +95,7 @@ export class BaileysProvider implements OnModuleInit {
       });
 
       // Generate pairing code only if not already registered
-      await this.handleAuthentication(targetPhone);
+      await this.handleAuthentication();
     } catch (error) {
       this.isConnecting = false;
       this.logger.error('❌ Failed to start:', error.message);
@@ -114,8 +105,8 @@ export class BaileysProvider implements OnModuleInit {
 
   private handleConnectionClose(lastDisconnect: any): boolean {
     const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
+
     this.logger.log(`❌ Connection closed. Reason: ${reason}`);
-    this.isConnecting = false;
 
     switch (reason) {
       case DisconnectReason.badSession:
@@ -156,7 +147,7 @@ export class BaileysProvider implements OnModuleInit {
     }
   }
 
-  private async handleAuthentication(phone?: string): Promise<void> {
+  private async handleAuthentication(): Promise<void> {
     // Wait a bit for socket to be ready
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -166,19 +157,31 @@ export class BaileysProvider implements OnModuleInit {
       return;
     }
 
+    const phone = process.env.PAIRING_PHONE_NUMBER?.replace(/\D/g, '');
+
+    if (!phone) {
+      this.logger.error('❌ PAIRING_PHONE_NUMBER not set in .env file');
+      return;
+    }
+
+    this.logger.log(`📱 Requesting pairing code for: +${phone}`);
+
     try {
+      // Wait a bit more to ensure socket is ready
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const code = await this.socket.requestPairingCode(phone);
 
+      this.logger.log(`🎉 Pairing code generated successfully!`);
       this.logger.log(`📱 Phone: +${phone}`);
-      this.logger.log(`🔐 Pairing Code: ${code}`);
+      this.logger.log(`🔑 Code: ${code}`);
       this.logger.log(
-        '📲 Enter this code in your WhatsApp app within 2 minutes',
+        `⏰ Enter this code in your WhatsApp app within 2 minutes`,
       );
     } catch (error) {
       this.logger.error('❌ Failed to generate pairing code:', error.message);
 
+      // If pairing fails, might need to clear session and try again
       if (
         error.message.includes('not authorized') ||
         error.message.includes('403')
@@ -190,10 +193,11 @@ export class BaileysProvider implements OnModuleInit {
     }
   }
 
-  public async getSocket(): Promise<WASocket> {
-    if (!this.socket || !this.socket.user?.id) {
-      return this.socket;
+  public getSocket(): WASocket {
+    if (!this.socket) {
+      throw new Error('WhatsApp socket not initialized');
     }
+    return this.socket;
   }
 
   public isConnected(): boolean {
@@ -213,7 +217,6 @@ export class BaileysProvider implements OnModuleInit {
     if (this.socket) {
       this.logger.log('🔌 Shutting down WhatsApp connection...');
       await this.socket.logout();
-      this.reconnectAttempts = 5;
     }
   }
 }
