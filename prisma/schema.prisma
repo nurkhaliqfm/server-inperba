@@ -32,6 +32,8 @@ model User {
   username                String                    @db.VarChar(255)
   fullname                String                    @db.VarChar(255)
   email                   String?                   @db.VarChar(255)
+  kontak                  String?                   @db.VarChar(255)
+  is_wa_connected         Boolean                   @default(false)
   password                String                    @db.VarChar(255)
   id_role                 Int                       @db.Int()
   foto                    String?                   @db.VarChar(255)

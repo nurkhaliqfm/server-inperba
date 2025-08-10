@@ -8,6 +8,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import pino from 'pino';
 import { Boom } from '@hapi/boom';
 import * as fs from 'fs';
+import { PrismaService } from 'src/common/prisma.service';
 
 @Injectable()
 export class BaileysProvider implements OnModuleInit {
@@ -17,8 +18,17 @@ export class BaileysProvider implements OnModuleInit {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
+  constructor(private prismaService: PrismaService) {}
+
   async onModuleInit(): Promise<void> {
-    await this.start();
+    const user = await this.prismaService.user.findFirst({
+      where: { username: 'adminpttun', id_role: 1, is_wa_connected: true },
+      select: { kontak: true },
+    });
+
+    if (user) {
+      await this.start(user.kontak);
+    }
   }
 
   private clearSession(): void {
@@ -32,7 +42,7 @@ export class BaileysProvider implements OnModuleInit {
     }
   }
 
-  private async start(): Promise<void> {
+  public async start(phone: string): Promise<void> {
     if (this.isConnecting) {
       this.logger.warn('⚠️ Already attempting to connect, skipping...');
       return;
@@ -78,7 +88,7 @@ export class BaileysProvider implements OnModuleInit {
             this.logger.log(
               `🔄 Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`,
             );
-            setTimeout(() => this.start(), 5000);
+            setTimeout(() => this.start(phone), 5000);
           } else if (this.reconnectAttempts >= this.maxReconnectAttempts) {
             this.logger.error('❌ Max reconnection attempts reached');
           }
@@ -95,7 +105,7 @@ export class BaileysProvider implements OnModuleInit {
       });
 
       // Generate pairing code only if not already registered
-      await this.handleAuthentication();
+      await this.handleAuthentication(phone);
     } catch (error) {
       this.isConnecting = false;
       this.logger.error('❌ Failed to start:', error.message);
@@ -147,7 +157,7 @@ export class BaileysProvider implements OnModuleInit {
     }
   }
 
-  private async handleAuthentication(): Promise<void> {
+  private async handleAuthentication(phone: string): Promise<void> {
     // Wait a bit for socket to be ready
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -156,8 +166,6 @@ export class BaileysProvider implements OnModuleInit {
       this.logger.log('✅ Already registered, waiting for connection...');
       return;
     }
-
-    const phone = process.env.PAIRING_PHONE_NUMBER?.replace(/\D/g, '');
 
     if (!phone) {
       this.logger.error('❌ PAIRING_PHONE_NUMBER not set in .env file');
@@ -188,7 +196,7 @@ export class BaileysProvider implements OnModuleInit {
       ) {
         this.logger.log('🔄 Clearing session and retrying...');
         this.clearSession();
-        setTimeout(() => this.start(), 3000);
+        setTimeout(() => this.start(phone), 3000);
       }
     }
   }
@@ -202,6 +210,25 @@ export class BaileysProvider implements OnModuleInit {
 
   public isConnected(): boolean {
     return this.socket?.user?.id != null;
+  }
+
+  public async logout(id_user: number): Promise<void> {
+    if (this.socket) {
+      await this.socket.logout();
+      this.clearSession();
+
+      await this.prismaService.user.update({
+        where: {
+          id: Number(id_user),
+        },
+        data: {
+          is_wa_connected: false,
+        },
+      });
+
+      // this.reconnectAttempts = 0;
+      this.logger.log('🔌 Logging out of WhatsApp...');
+    }
   }
 
   async onApplicationShutdown(): Promise<void> {

@@ -15,6 +15,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { OTPModule } from './otp/otp.module';
 import { AdminModule } from './admin/admin.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AdminModule } from './admin/admin.module';
     OauthModule,
     PublicModule,
     AdminModule,
+    WhatsappModule,
     OTPModule,
   ],
   controllers: [],
