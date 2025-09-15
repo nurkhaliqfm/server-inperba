@@ -1,99 +1,120 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# INPERBA - Informasi Perkara Banding PTTUN Makassar
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+**INPERBA** adalah aplikasi backend untuk monitoring dan pengelolaan informasi perkara banding di Pengadilan Tinggi Tata Usaha Negara (PTTUN) Makassar. Aplikasi ini dikembangkan dengan teknologi modern untuk mendukung performa, keamanan, dan automasi notifikasi WhatsApp ke pengguna terkait update perkara.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Fitur Utama
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Monitoring perkara banding** secara real-time di PTTUN Makassar
+- **Manajemen user & autentikasi** menggunakan OAuth2.0 + JWT
+- **Database** MySQL dengan integrasi Prisma ORM
+- **WhatsApp Automation**: kirim OTP dan notifikasi perkara via WhatsApp menggunakan Baileys
+- **Pengembangan automasi WhatsApp** untuk berbagai keperluan notifikasi internal/eksternal
+- **API siap produksi, scalable & secure**
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## Tech Stack
 
-## Compile and run the project
+- [Bun](https://bun.sh/) - JavaScript runtime yang super cepat
+- [Prisma ORM](https://www.prisma.io/) - ORM modern untuk TypeScript/JavaScript
+- [OAuth2.0 + JWT](https://jwt.io/) - Standar autentikasi & otorisasi
+- [MySQL](https://www.mysql.com/) - Database relasional
+- [Baileys](https://github.com/adiwajshing/Baileys) - WhatsApp Web API client untuk Node.js/Bun
+- [TypeScript](https://www.typescriptlang.org/)
+
+---
+
+## Instalasi & Setup
+
+### 1. Clone Repo
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/nurkhaliqfm/server-inperba.git
+cd server-inperba
 ```
 
-## Run tests
+### 2. Instalasi Dependency
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+bun install
 ```
 
-## Deployment
+### 3. Konfigurasi Environment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Copy `.env.example` ke `.env` lalu sesuaikan variabelnya:
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+cp .env.example .env
+# Edit .env sesuai kebutuhan (MySQL, JWT, OAuth, WhatsApp, dsb)
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Setup Database
 
-## Resources
+Inisialisasi dan migrasi database dengan Prisma:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+bunx prisma migrate dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 5. Jalankan Server
 
-## Support
+```bash
+bun run dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## Fitur WhatsApp & OTP
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- OTP dikirim otomatis ke nomor WhatsApp user menggunakan Baileys
+- Notifikasi update perkara banding langsung ke WhatsApp user
+- Siap dikembangkan untuk automasi WA lainnya (broadcast, reminder, dsb.)
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Autentikasi & Keamanan
+
+- OAuth2.0 untuk login (siapkan kredensial di `.env`)
+- JWT untuk sesi user & proteksi API
+- Semua endpoint penting menggunakan middleware autentikasi
+
+---
+
+## Pengembangan & Testing
+
+- Struktur modular
+- API siap diintegrasikan dengan frontend/mobile
+- Jalankan test:
+  ```bash
+  bun test
+  ```
+
+---
+
+## Dokumentasi API
+
+- [OpenAPI/Swagger] (jika tersedia) untuk eksplorasi endpoint
+- Struktur endpoint: `/auth`, `/user`, `/perkara`, `/wa`, dsb.
+
+---
+
+## Kontribusi
+
+Kontribusi terbuka! Silakan fork repository, buat branch baru, dan ajukan pull request.
+
+---
+
+## Lisensi
+
+MIT License
+
+---
+
+## Kontak & Dukungan
+
+- Pengembang: [@nurkhaliqfm](https://github.com/nurkhaliqfm)
+- Email: nurkhaliqfm@gmail.com
+- WhatsApp automation oleh: [Baileys](https://github.com/adiwajshing/Baileys)
+- Untuk kebutuhan khusus, silakan buka issue di repo ini.
