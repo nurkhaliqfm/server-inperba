@@ -32,7 +32,7 @@ export class BaileysProvider implements OnModuleInit {
     }
   }
 
-  private async start(): Promise<void> {
+  public async start(phone?: string): Promise<void> {
     if (this.isConnecting) {
       this.logger.warn('⚠️ Already attempting to connect, skipping...');
       return;
@@ -202,6 +202,15 @@ export class BaileysProvider implements OnModuleInit {
 
   public isConnected(): boolean {
     return this.socket?.user?.id != null;
+  }
+
+  public async logout(): Promise<void> {
+    if (this.socket) {
+      this.logger.log('🔌 Logging out of WhatsApp...');
+      await this.socket.logout();
+      this.reconnectAttempts = 5;
+      this.clearSession();
+    }
   }
 
   async onApplicationShutdown(): Promise<void> {

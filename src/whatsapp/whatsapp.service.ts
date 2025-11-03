@@ -3,10 +3,10 @@ import { BaileysProvider } from '../baileys/baileys.provider';
 import { generateOTP, validateOTP } from 'src/utils/otp.util';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
-import { OTPValidation } from './otp.validation';
+import { WhatsappValidation } from './whatsapp.validation';
 
 @Injectable()
-export class OTPService {
+export class WhatsappService {
   constructor(
     private readonly baileys: BaileysProvider,
     private prismaService: PrismaService,
@@ -14,7 +14,7 @@ export class OTPService {
   ) {}
 
   async create(phone: string, identity: string): Promise<string> {
-    const data = this.validationService.validate(OTPValidation.REQUEST, {
+    const data = this.validationService.validate(WhatsappValidation.REQUEST, {
       phone: phone,
       identity: identity,
     });
@@ -44,11 +44,9 @@ export class OTPService {
 
     const jid = data.phone.replace(/\D/g, '') + '@s.whatsapp.net';
     const message = `🔐 OTP VERIFICATION\n\nKode OTP Anda: *${otp}*\n\n> ⁠Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.`;
-    const socket = this.baileys.getSocket();
+    const socket = await this.baileys.getSocket();
 
-    console.log(socket.user.id, 'WhatsApp socket for sending message');
-
-    await this.baileys.getSocket().sendMessage(jid, { text: message });
+    await socket.sendMessage(jid, { text: message });
 
     return `✅ OTP sent to ${data.phone}`;
   }
@@ -58,7 +56,7 @@ export class OTPService {
     otp: string,
     identity: string,
   ): Promise<string> {
-    const data = this.validationService.validate(OTPValidation.VAIDATION, {
+    const data = this.validationService.validate(WhatsappValidation.REQUEST, {
       phone: phone,
       otp: otp,
       identity: identity,
