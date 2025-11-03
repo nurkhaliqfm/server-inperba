@@ -58,6 +58,10 @@ Inisialisasi dan migrasi database dengan Prisma:
 bunx prisma migrate dev
 ```
 
+```bash
+bunx prisma db seed
+```
+
 ### 5. Jalankan Server
 
 ```bash
