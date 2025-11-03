@@ -58,6 +58,8 @@ Inisialisasi dan migrasi database dengan Prisma:
 bunx prisma migrate dev
 ```
 
+Generate dummy data:
+
 ```bash
 bunx prisma db seed
 ```
