@@ -13,6 +13,8 @@ import { JwtModule } from '@nestjs/jwt';
 import * as fs from 'fs';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { OTPModule } from './otp/otp.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { APP_GUARD } from '@nestjs/core';
     CommonModule,
     OauthModule,
     PublicModule,
+    AdminModule,
+    OTPModule,
   ],
   controllers: [],
   providers: [
@@ -45,10 +49,6 @@ export class AppModule implements NestModule {
       .exclude(
         { path: 'api/oauth/token', method: RequestMethod.POST },
         { path: 'api/public/*', method: RequestMethod.GET },
-        {
-          path: 'api/admin/repository/jurnal/file/*',
-          method: RequestMethod.GET,
-        },
       )
       .forRoutes({ path: 'api/admin/*', method: RequestMethod.ALL });
   }

@@ -23,10 +23,13 @@ export class ErrorFilter implements ExceptionFilter {
         error: exception.getResponse(),
       });
     } else if (exception instanceof ZodError) {
-      this.logger.error(`${400} - Validation error`);
+      this.logger.error(
+        `${400} - Validation error: ${JSON.stringify(exception.errors, null, 2)}`,
+      );
 
       response.status(400).json({
         error: 'Validation error',
+        details: exception.errors,
       });
     } else {
       this.logger.error(`${500} - ${exception.message}`);
